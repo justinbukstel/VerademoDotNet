@@ -45,7 +45,7 @@ jobs:
           with: 
             appname: GitHub_VerademoDotNet
             createprofile: false
-            filepath: '../workspace/artifact/'
+            filepath: '${{ github.workspace }}/artifact'
             vid: '${{ secrets.Veracode_API_ID }}'
             vkey: '${{ secrets.Veracode_API_KEY }}'
             sandboxname: GitHub
