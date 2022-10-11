@@ -107,9 +107,10 @@ jobs:
           appname: GitHub-VeraDemoDotNet
           createprofile: false
           filepath: /github/workspace/BuildArchive.zip
-          vid: ${{secrets.Veracode-API-ID}}
-          vkey: ${{secrets.Veracode-API-KEY}}
+          vid: '${{ secrets.VERACODE_API_ID }}'
+          vkey: '${{ secrets.VERACODE_API_KEY }}'
           sandboxname: GitHub
+          createsandbox: false
           
             
             
