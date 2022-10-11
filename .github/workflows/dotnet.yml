@@ -32,3 +32,23 @@ jobs:
           mkdir -p ${{ github.workspace }}/artifact
           copy Verademo-dotnet.zip ${{ github.workspace }}/artifact
           dir ${{ github.workspace }}/artifact
+    
+  Security:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Check out Main
+          uses: actions/checkout@v2
+          with:
+            path: '${{ github.workspace }}/artifact'
+        - name: Veracode Upload And Scan
+          uses: veracode/veracode-uploadandscan-action@0.2.4
+          with: 
+            appname: GitHub_VerademoDotNet
+            createprofile: false
+            filepath: '../workspace/artifact/'
+            vid: '${{ secrets.Veracode_API_ID }}'
+            vkey: '${{ secrets.Veracode_API_KEY }}'
+            sandboxname: GitHub
+            
+            
+      
