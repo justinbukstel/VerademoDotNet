@@ -40,7 +40,7 @@ jobs:
         - name: Check out Main
           uses: actions/checkout@v2
           with:
-            path: '${{ github.workspace }}/artifact'
+            path: '${{ github.workspace }}/artifact/Verademo-dotnet.zip'
         - name: Veracode Upload And Scan
           uses: veracode/veracode-uploadandscan-action@0.2.4
           with: 
