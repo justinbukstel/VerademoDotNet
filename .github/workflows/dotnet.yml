@@ -89,6 +89,7 @@ jobs:
           path: "./BuildArchive.zip" 
     
   Security:
+    needs: build
     name: Veracode Upload and Scan
     runs-on: ubuntu-latest
     
