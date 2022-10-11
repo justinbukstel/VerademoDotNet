@@ -1,50 +1,33 @@
-name: Manual Build and Test Application
+name: .NET
 
 on:
+  push:
+   branches:
+     - main
   workflow_dispatch:
-  
+
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      - name: Envionmental Info
-        run: env
+      - uses: actions/checkout@v2
 
-      - uses: actions/checkout@v3
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: '6.0.x'
+          include-prerelease: true
 
-      - name: GitHub Script
-        run: echo ${GITHUB_WORKSPACE}
+      - name: Build with dotnet
+        run: dotnet build --configuration Debug
 
-      - name: Build
-        run: dotnet build --no-restore
-
-      - name: GitHub Script
-        run: echo ${GITHUB_WORKSPACE}
-
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
-
-      - name: Build Produced
-        run: ls -la ${{github.workspace}}/bin/Debug/net6.0/
-
-      - name: Compress Content
-        #run: tar -czvf application.tar.gz --exclude=*.json ${{github.workspace}}/bin/Debug/net6.0/*.*
-        run: |
-          cd ${{github.workspace}}/bin/Debug/net6.0
-          zip -r ${{github.workspace}}/application.zip . -x *.json
-      - name: Verify Content
-        run: echo ${GITHUB_WORKSPACE} | ls -la
+      - name: dotnet publish
+        run: dotnet publish -c Debug -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
-            name: .net-app
-            path: ${{github.workspace}}/application.zip
-      
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
     
