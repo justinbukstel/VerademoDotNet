@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-dotnet@v1
       - name: Restore dependencies
         run: nuget restore Verademo-dotnet.sln
+      - name: create build directory
+        run: mkdir _build
       - name: Clean Default Build
         run: 'msbuild Verademo-dotnet.sln /t:clean'
       - name: Build - was dotnet build --no-restore
@@ -26,29 +28,22 @@ jobs:
           /p:WebPublishMethod=Package /p:PackageAsSingleFile=true
           /p:SkipInvalidConfigurations=true /p:PackageLocation=./..
           /p:DebugSymbols=true /t:build
-      - name: List files in the repository and copy artifact
-        run: |
-          dir ${{ github.workspace }}
-          mkdir -p ${{ github.workspace }}/artifact
-          copy Verademo-dotnet.zip ${{ github.workspace }}/artifact
-          dir ${{ github.workspace }}/artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: VerademoBundle
+          path: "./_build"
+      - name: package
+        run: Compress-Archive -LiteralPath _build/ -DestinationPath BuildArchive.zip
+        
+      - run: ls
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: VerademoZip
+          path: "./BuildArchive.zip"
     
-  Security:
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - name: Check out Main
-          uses: actions/checkout@v2
-          with:
-            path: '${{ github.workspace }}/artifact/Verademo-dotnet.zip'
-        - name: Veracode Upload And Scan
-          uses: veracode/veracode-uploadandscan-action@0.2.4
-          with: 
-            appname: GitHub_VerademoDotNet
-            createprofile: false
-            filepath: '/home/runner/work/VerademoDotNet/VerademoDotNet/artifact/Verademo-dotnet.zip'
-            vid: '${{ secrets.Veracode_API_ID }}'
-            vkey: '${{ secrets.Veracode_API_KEY }}'
+
           
             
             
