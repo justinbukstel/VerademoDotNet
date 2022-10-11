@@ -1,32 +1,65 @@
-name: .NET
+name: DotNet
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
+  
+env:
+   DOTNET_VERSION: '4.5.2'
+   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+  
 
 jobs:
   build:
+    name: build-and-test
     runs-on: windows-latest
-
+    # grants permissions for the artifact to be uploaded
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - uses: actions/checkout@v2
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can acces it and clones the repo
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        #with:
+        #  dotnet-version: ${{env.DOTNET_VERSION}}
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+      - run: ls
+      - run: dir
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.2
+#      - name: Navigate to Workspace
+#        run: cd $GITHUB_WORKSPACE
+      - name: Create Build Directory
+        run: mkdir _build
+      
+      - name: Install dependencies
+        run: dotnet restore
+        
+      - name: Restore Packages
+        run: nuget restore Verademo-dotnet.sln
 
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
+#      - name: Build
+#        run: dotnet build --configuration Release --no-restore
+#      - name: Test
+#        run: dotnet test --no-restore --verbosity normal
+
+
+
+      - name: Build Solution
+        run: |
+          msbuild.exe Verademo-dotnet.sln  /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
         with:
-          dotnet-version: '6.0.x'
-          include-prerelease: true
-
-      - name: Build with dotnet
-        run: dotnet build VerademoDotNet/VerademoDotNet.csproj --configuration Debug
-
-      - name: dotnet publish
-        run: dotnet publish -c Debug -o ${{env.DOTNET_ROOT}}/myapp
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: VerademoBundle
+          path: "./_build" 
