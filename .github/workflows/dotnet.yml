@@ -101,7 +101,15 @@ jobs:
           path: "./BuildArchive.zip"
       - name: Confirm Contents
         run: ls -la
-      
+      - name: Veracode Upload And Scan
+        uses: veracode/veracode-uploadandscan-action@0.2.4
+        with: 
+          appname: GitHub-VeraDemoDotNet
+          createprofile: false
+          filepath: /github/workspace/BuildArchive.zip
+          vid: ${{secrets.Veracode-API-ID}}
+          vkey: ${{secrets.Veracode-API-KEY}}
+          sandboxname: GitHub
           
             
             
