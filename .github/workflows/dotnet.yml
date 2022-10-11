@@ -104,7 +104,7 @@ jobs:
       - name: Veracode Upload And Scan
         uses: veracode/veracode-uploadandscan-action@0.2.4
         with: 
-          appname: GitHub-VeraDemoDotNet
+          appname: GitHub-VerademoDotNet
           createprofile: false
           filepath: /github/workspace/BuildArchive.zip
           vid: '${{ secrets.VERACODE_API_ID }}'
