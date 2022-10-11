@@ -2,10 +2,10 @@ name: Veracode-SAST
 'on':
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 jobs:
   build:
     runs-on: windows-2019
