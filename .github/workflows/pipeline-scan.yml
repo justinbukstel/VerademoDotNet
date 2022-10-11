@@ -1,0 +1,53 @@
+name: Manual Build and Test Application
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Envionmental Info
+        run: env
+
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
+      - name: GitHub Script
+        run: echo ${GITHUB_WORKSPACE}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: GitHub Script
+        run: echo ${GITHUB_WORKSPACE}
+
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+
+      - name: Build Produced
+        run: ls -la ${{github.workspace}}/bin/Debug/net6.0/
+
+      - name: Compress Content
+        #run: tar -czvf application.tar.gz --exclude=*.json ${{github.workspace}}/bin/Debug/net6.0/*.*
+        run: |
+          cd ${{github.workspace}}/bin/Debug/net6.0
+          zip -r ${{github.workspace}}/application.zip . -x *.json
+      - name: Verify Content
+        run: echo ${GITHUB_WORKSPACE} | ls -la
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+            name: .net-app
+            path: ${{github.workspace}}/application.zip
+      
+    
