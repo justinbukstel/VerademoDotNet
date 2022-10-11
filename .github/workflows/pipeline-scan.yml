@@ -21,9 +21,6 @@ jobs:
       - name: GitHub Script
         run: echo ${GITHUB_WORKSPACE}
 
-      - name: Restore dependencies
-        run: dotnet restore
-
       - name: Build
         run: dotnet build --no-restore
 
