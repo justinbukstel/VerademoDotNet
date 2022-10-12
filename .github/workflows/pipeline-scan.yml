@@ -43,7 +43,7 @@ jobs:
   Pipeline_Scan: 
     needs: build
     name: Veracode Pipeline Scan
-    runs-on: ubuntu_latest
+    runs-on: ubuntu-latest
     
     steps: 
       - name: checkout repo
@@ -54,7 +54,7 @@ jobs:
         uses: actions/download-artifact@v3.0.0
         with:
           name: VerademoZip
-          path: "./BuildArchive.zip"
+          path: "./Verademo-dotnet.zip"
       
       # run the pipeline scan
       - name: pipeline-scan action step
@@ -63,7 +63,7 @@ jobs:
         with: 
           vid: ${{ secrets.VERACODE_API_ID }}
           vkey: ${{ secrets.VERACODE_API_KEY }}
-          file: /github/workspace/BuildArchive.zip
+          file: ./Verademo-dotnet.zip
           request_policy: "Test"
           store_baseline_file: true
           store_baseline_file_branch: main
