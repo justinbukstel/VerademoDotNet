@@ -1,8 +1,8 @@
 name: DotNet
 
-on:
+#on:
   push:
-    branches: [ main ]
+    branches: [ masin ]
   pull_request:
     branches: [ main ]
     paths:
