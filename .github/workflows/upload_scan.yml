@@ -2,7 +2,7 @@ name: Veracode-SAST
 'on':
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
       - main
@@ -17,12 +17,12 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
       - name: Restore dependencies
-        run: nuget restore VeraDemoNet.sln
+        run: nuget restore Veradeemo-dotnet.sln
       - name: Clean Default Build
-        run: 'msbuild VeraDemoNet.sln /t:clean'
+        run: 'msbuild Verademo-dotnet.sln /t:clean'
       - name: Build - was dotnet build --no-restore
         run: >-
-          msbuild.exe VeraDemoNet.sln /p:DeployOnBuild=true
+          msbuild.exe Verademo-dotnet.sln /p:DeployOnBuild=true
           /p:WebPublishMethod=Package /p:PackageAsSingleFile=true
           /p:SkipInvalidConfigurations=true /p:PackageLocation=./..
           /p:DebugSymbols=true /t:build
@@ -30,7 +30,7 @@ jobs:
         run: |
           dir ${{ github.workspace }}
           mkdir -p ${{ github.workspace }}/artifact
-          copy VeraDemoNet.zip ${{ github.workspace }}/artifact
+          copy Verademo-dotnet.zip ${{ github.workspace }}/artifact
           dir ${{ github.workspace }}/artifact
 
     
