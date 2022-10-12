@@ -46,8 +46,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps: 
-      - name: checkout repo
+      - name: Check out main
         uses: actions/checkout@v2
+        with:
+          path: '${{ github.workspace }}/artifact'
         
       # get compiled binary from previous job
       - name: get archive
