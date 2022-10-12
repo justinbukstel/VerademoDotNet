@@ -1,92 +1,44 @@
-name: DotNet
-
-#on:
+name: Veracode-Pipeline
+'on':
   push:
-    branches: [ masin ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
-    paths:
-    - '**.cs'
-    - '**.csproj'
-  
-env:
-   DOTNET_VERSION: '4.5.2'
-   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-  
-
+    branches:
+      - main
 jobs:
   build:
-    name: build
-    runs-on: windows-latest
-    # grants permissions for the artifact to be uploaded
-    permissions:
-      contents: read
-      packages: write
+    runs-on: windows-2019
+ 
     steps:
-    
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can acces it and clones the repo
-      - uses: actions/checkout@v3
-      # Set up DOT.NET
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+      - uses: actions/checkout@v2
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        #with:
-        #  dotnet-version: ${{env.DOTNET_VERSION}}
-      # Set up MSBuild and add to path  
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
-        
-      # [DEBUG]: listing directories after MSBUILD
-      - run: ls
-      - run: dir
-      
-      # Set up NuGet to install NuGet dependencies
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.2
-#      - name: Navigate to Workspace
-#        run: cd $GITHUB_WORKSPACE
-
-      # Create Build Directory
-      - name: Create Build Directory
-        run: mkdir _build
-      
-      # Restore dependencies to the project
-      - name: Install dependencies
-        run: dotnet restore
-      
-      # NuGet call to restore packages
-      - name: Restore Packages
+        uses: actions/setup-dotnet@v1
+      - name: Restore dependencies
         run: nuget restore Verademo-dotnet.sln
-
-# Results in an error not finding the solution files to build off, possibly due to being --no-restore
-#      - name: Build
-#        run: dotnet build 
-#     - name: Test
-#       run: dotnet test --no-restore --verbosity normal
-
-
-      # Build the solution
-      - name: Build Solution
+      - name: Clean Default Build
+        run: 'msbuild Verademo-dotnet.sln /t:clean'
+      - name: Build - was dotnet build --no-restore
+        run: >-
+          msbuild.exe Verademo-dotnet.sln /p:DeployOnBuild=true
+          /p:WebPublishMethod=Package /p:PackageAsSingleFile=true
+          /p:SkipInvalidConfigurations=true /p:PackageLocation=./..
+          /p:DebugSymbols=true /t:build
+      - name: List files in the repository and copy artifact
         run: |
-          msbuild.exe Verademo-dotnet.sln  /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
-      
-      # Upload the artifact to the _build directory
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: VerademoBundle
-          path: "./_build" 
-      
-      - name: Package solution
-        run: Compress-Archive -LiteralPath _build/ -DestinationPath BuildArchive.zip
-      
-      - run: ls
-      
+          dir ${{ github.workspace }}
+          mkdir -p ${{ github.workspace }}/artifact
+          copy Verademo-dotnet.zip ${{ github.workspace }}/artifact
+          dir ${{ github.workspace }}/artifact
+          
        # Upload the artifact of the zip archive
       - name: Upload artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: VerademoZip
-          path: "./BuildArchive.zip"
+          path: "./Verademo-dotnet.zip" 
 
   Pipeline_Scan: 
     needs: build
