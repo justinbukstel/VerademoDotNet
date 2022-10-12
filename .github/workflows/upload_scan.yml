@@ -45,9 +45,6 @@ jobs:
 #      - name: Navigate to Workspace
 #        run: cd $GITHUB_WORKSPACE
 
-      # Create Build Directory
-      - name: Create Build Directory
-        run: mkdir _build
       
       # Restore dependencies to the project
       - name: Install dependencies
@@ -69,16 +66,12 @@ jobs:
         run: |
           msbuild.exe Verademo-dotnet.sln  /nologo /nr:false /p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:DeleteExistingFiles=True /p:platform="Any CPU" /p:configuration="Release" /p:PublishUrl="../_build"
       
-      # Upload the artifact to the _build directory
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: VerademoBundle
-          path: "./_build" 
-      
-      - name: Package solution
-        run: Compress-Archive -LiteralPath _build/ -DestinationPath BuildArchive.zip
-      
+      - name: List files in the repository and zip artifact
+        run: |
+          dir ${{ github.workspace }}
+          mkdir -p ${{ github.workspace }}/artifact
+          copy Verademo-dotnet.zip ${{ github.workspace }}/artifact
+          dir ${{ github.workspace }}/artifact
       - run: ls
       
        # Upload the artifact of the zip archive
@@ -86,7 +79,8 @@ jobs:
         uses: actions/upload-artifact@v3.1.0
         with:
           name: VerademoZip
-          path: "./BuildArchive.zip" 
+          path: "./Verademo-dotnet.zip" 
+
     
   Security:
     needs: build
@@ -94,11 +88,16 @@ jobs:
     runs-on: ubuntu-latest
     
     steps: 
+      - name: Check out main
+        uses: actions/checkout@v2
+        with:
+          path: '${{ github.workspace }}/artifact'
+          
       - name: Download Build Artifact
         uses: actions/download-artifact@v3.0.0
         with:
           name: VerademoZip
-          path: "./BuildArchive.zip"
+          path: "./Verademo-dotnet.zip"
       - name: Confirm Contents
         run: ls -la
       - name: Veracode Upload And Scan
@@ -106,7 +105,7 @@ jobs:
         with: 
           appname: GitHub_VerademoDotNet
           createprofile: false
-          filepath: /github/workspace/BuildArchive.zip
+          filepath: ./Verademo-dotnet.zip
           vid: '${{ secrets.VERACODE_API_ID }}'
           vkey: '${{ secrets.VERACODE_API_KEY }}'
           sandboxname: GitHub
