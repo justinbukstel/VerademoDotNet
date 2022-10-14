@@ -1,34 +1,84 @@
-name: Veracode Pipeline Scanner
-
-on: 
+name: Veracode-Pipeline
+'on':
   push:
-    branches: main
-
-jobs: 
-  build: 
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
     runs-on: ubuntu-latest
-  
-    steps: 
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-  
+    steps:
+      - name: see who am
+        run: whoami
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+      - uses: actions/checkout@v2
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: 6.0.x
-      
-      - name: Install NuGet
-        run: dotnet new --install TimHeuer.GitHubActions.Templates
-      
-      - name: GitHub Script
-        run: echo ${GITHUB_WORKSPACE}
-      
-      - name: see content
-        run: ls -la
-    
+        uses: actions/setup-dotnet@v1
       - name: Restore dependencies
-        run: dotnet restore /home/runner/work/VerademoDotNet/VerademoDotNet/VerademoDotNet/Verademo-dotnet.csproj
+        run: nuget restore Verademo-dotnet.sln
+      - name: Clean Default Build
+        run: 'msbuild Verademo-dotnet.sln /t:clean'
+      - name: Build - was dotnet build --no-restore
+        run: >-
+          msbuild.exe Verademo-dotnet.sln /p:DeployOnBuild=true
+          /p:WebPublishMethod=Package /p:PackageAsSingleFile=true
+          /p:SkipInvalidConfigurations=true /p:PackageLocation=./..
+          /p:DebugSymbols=true /t:build
+       # Upload the artifact of the zip archive
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: VerademoZip
+          path: "${{ github.workspace }}/Verademo-dotnet.zip"
   
+  Pipeline_Scan:
+    needs: build
+    name: Veracode Pipeline Scan
+    runs-on: ubuntu-latest
+    steps:
+      # Prepare Environment
+      - name: Setup Java
+        uses: actions/setup-java@v3.5.1
+        with:
+          # The Java Verion
+          java-version: '11'
+          distribution: 'microsoft'
+      - name: Verify Java
+        run: 'java --version'
+      - name: Download Pipeline Scanner
+        uses: wei/curl@master
+        with:
+          args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+      - name: Unzip Pipeline Scanner
+        run: unzip pipeline-scan-LATEST.zip
+      - name: Get Present Directory
+        run: pwd
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v3.0.0
+        with:
+          # Artifact Name
+          name: VerademoZip
+          # Destination Path
+          path: "${{ github.workspace }}/Verademo-dotnet.zip"
+      - name: Confirm Contents
+        run: ls -la
+        run: whoami
+      - name: Run Pipeline Scanner
+        run: java -Dpipeline.debug=false -jar pipeline-scan.jar --veracode_api_id "${{ secrets.VERACODE_API_ID }}" --veracode_api_key "${{ secrets.VERACODE_API_KEY }}" --file "Verademo-dotnet.zip" -jf veracode-pipeline-results.json --fail_on_severity="Very High, High"
+      - name: Upload Analysis Results
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: veracode-pipeline-results.json
+          path: ${{github.workspace}}/veracode-pipeline-results.json
+
+
+
+
+
+
     
   
   
