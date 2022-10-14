@@ -8,7 +8,7 @@ name: Veracode-Pipeline
       - main
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-2019
     steps:
       - name: see who am
         run: whoami
