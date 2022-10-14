@@ -17,6 +17,9 @@ jobs:
         with:
           dotnet-version: 6.0.x
       
+      - name: Install NuGet
+        run: dotnet new --install TimHeuer.GitHubActions.Templates
+      
       - name: GitHub Script
         run: echo ${GITHUB_WORKSPACE}
       
