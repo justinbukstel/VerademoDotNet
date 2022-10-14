@@ -26,19 +26,13 @@ jobs:
           /p:WebPublishMethod=Package /p:PackageAsSingleFile=true
           /p:SkipInvalidConfigurations=true /p:PackageLocation=./..
           /p:DebugSymbols=true /t:build
-      - name: List files in the repository and copy artifact
-        run: |
-          dir ${{ github.workspace }}
-          mkdir -p ${{ github.workspace }}/artifact
-          copy Verademo-dotnet.zip ${{ github.workspace }}/artifact
-          dir ${{ github.workspace }}/artifact
-          
+ 
        # Upload the artifact of the zip archive
       - name: Upload artifact
         uses: actions/upload-artifact@v3.1.0
         with:
           name: VerademoZip
-          path: "./Verademo-dotnet.zip" 
+          path: "${{ github.workspace }}/Verademo-dotnet.zip" 
 
   Pipeline_Scan: 
     needs: build
