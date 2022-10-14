@@ -19,6 +19,9 @@ jobs:
       
       - name: GitHub Script
         run: echo ${GITHUB_WORKSPACE}
+      
+      - name: see content
+        run: ls -la
     
       - name: Restore dependencies
         run: dotnet restore ./VeraDemoDotNet/Verademo-dotnet.csproj
