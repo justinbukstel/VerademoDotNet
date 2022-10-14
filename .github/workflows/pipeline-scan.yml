@@ -24,7 +24,7 @@ jobs:
         run: ls -la
     
       - name: Restore dependencies
-        run: dotnet restore ./VeraDemoDotNet/Verademo-dotnet.csproj
+        run: dotnet restore /home/runner/work/VerademoDotNet/VerademoDotNet/VerademoDotNet/Verademo-dotnet.csproj
   
     
   
