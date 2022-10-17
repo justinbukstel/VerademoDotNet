@@ -26,7 +26,7 @@ jobs:
           msbuild.exe Verademo-dotnet.sln /p:DeployOnBuild=true
           /p:WebPublishMethod=Package /p:PackageAsSingleFile=false
           /p:SkipInvalidConfigurations=true /p:PackageLocation=./..
-          /p:DebugSymbols=true /t:build /p:platform="Any CPU" /p:configuration:"Debug"
+          /p:DebugSymbols=true /t:build /p:platform="Any CPU" /p:configuration="Debug"
        # Upload the artifact of the zip archive
        
       - name: List files in repo and zip artifact
