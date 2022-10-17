@@ -24,7 +24,7 @@ jobs:
       - name: Build - was dotnet build --no-restore
         run: >-
           msbuild.exe Verademo-dotnet.sln /p:DeployOnBuild=true
-          /p:WebPublishMethod=Package /p:PackageAsSingleFile=true
+          /p:WebPublishMethod=Package /p:PackageAsSingleFile=false
           /p:SkipInvalidConfigurations=true /p:PackageLocation=./..
           /p:DebugSymbols=true /t:build
        # Upload the artifact of the zip archive
