@@ -75,7 +75,7 @@ jobs:
       - name: who am i
         run: whoami
       - name: Run Pipeline Scanner
-        run: chmod+x java -Dpipeline.debug=false -jar pipeline-scan.jar --veracode_api_id "${{ secrets.VERACODE_API_ID }}" --veracode_api_key "${{ secrets.VERACODE_API_KEY }}" --file "Verademo-dotnet.zip" -jf veracode-pipeline-results.json --fail_on_severity="Very High, High"
+        run: chmod +x java -Dpipeline.debug=false -jar pipeline-scan.jar --veracode_api_id "${{ secrets.VERACODE_API_ID }}" --veracode_api_key "${{ secrets.VERACODE_API_KEY }}" --file "Verademo-dotnet.zip" -jf veracode-pipeline-results.json --fail_on_severity="Very High, High"
       - name: Upload Analysis Results
         uses: actions/upload-artifact@v3.1.0
         with:
