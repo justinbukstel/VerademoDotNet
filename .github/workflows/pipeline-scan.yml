@@ -26,8 +26,15 @@ jobs:
           msbuild.exe Verademo-dotnet.sln /p:DeployOnBuild=true
           /p:WebPublishMethod=Package /p:PackageAsSingleFile=false
           /p:SkipInvalidConfigurations=true /p:PackageLocation=./..
-          /p:DebugSymbols=true /t:build
+          /p:DebugSymbols=true /t:build /p:platform="Any CPU" /p:configuration:"Debug"
        # Upload the artifact of the zip archive
+       
+      - name: List files in repo and zip artifact
+        run: |
+          dir ${{ github.workspace }}
+          Compress-Archive -Path ${{ github.workspace }} -DestinationPath Verademo-dotnet.zip
+      - run: ls
+      
       - name: Upload artifact
         uses: actions/upload-artifact@v3.1.0
         with:
