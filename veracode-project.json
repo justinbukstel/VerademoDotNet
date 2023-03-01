@@ -1,0 +1,9 @@
+{
+  "projectVersion": "1.0.0",
+  "uploadAndScan": {
+    "appName": "verademo-VS",
+    "fileFolderPath": [
+      ".veracode/build"
+    ]
+  }
+}
