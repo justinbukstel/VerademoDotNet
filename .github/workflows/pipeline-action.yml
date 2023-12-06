@@ -55,7 +55,7 @@ jobs:
           # GITHUB_TOKEN or a repo scoped PAT.
           token: '{{ secrets.GH_TOKEN }}'
           # Name of the Veracode default policy or custom-built policy to apply to the scan results.
-          veracode_policy_name: 'Test'
+          #veracode_policy_name: 'Test'
           # DPERECATED, WILL BE REMOVED WITH NEXT VERSION - Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
           # request_policy: # optional
           # Fail the pipeline job if the scan finds flaws of the specified severities. Enter a comma-separated list of severities in quotation marks.
@@ -99,7 +99,7 @@ jobs:
           # Enter one these values, which are case-sensitive, for the type of development stage: Development, Testing, Release.
          # development_stage: # optional
           # Enable debug mode. 1 for on
-          debug: 1
+          #debug: 1
           # Enable the storage of a baseline file. Takes true or fales
           #store_baseline_file: true
           # Enter the branch name where the baseline file should be stored
